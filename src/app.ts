@@ -43,10 +43,32 @@ class ProjectInput {
         this.attach();
     }
 
+    private clearForm() {
+        this.element.reset();
+    }
+
+    private gatherUserInfo(): [string, string, number] | void {
+        const inputTitle = this.titleInputElement.value.trim();
+        const inputDescription = this.descriptionInputElement.value.trim();
+        const inputPeople = this.peopleInputElement.value.trim();
+
+        if (!inputTitle.length || !inputDescription.length || !inputPeople.length) {
+            alert('All fields are required!');
+            return;
+        }
+        else return [inputTitle, inputDescription, +inputPeople]
+    }
+
     @autobind
     private submitHandler(event: Event) {
         event.preventDefault();
-        console.log(this.titleInputElement.value);
+        const userInfo = this.gatherUserInfo();
+
+        if (Array.isArray(userInfo)) {
+            const [title, description, people] = userInfo;
+            console.log(title, description, people);
+            this.clearForm();
+        }
     }
 
     // Add an event listener to the form
