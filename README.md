@@ -10,3 +10,6 @@ This app is implemented with typescript OOP where I make good use of best class 
 - Use `npm install typescript --save-dev` to install typescript in your project. I installed typescript globally.
 - Start the typescript watcher to watch all changes in the .ts files by running `tsc -w`
 - Once you have the tsc server running, run `npm run start` to start the development server.
+
+## Hosting
+- We will use netlify to host this app once ready
