@@ -1,3 +1,38 @@
+// Project type
+interface project {
+    title: string;
+    description: string;
+    people: number;
+}
+
+// Project state manager
+class ProjectState {
+    private projects: any[] = [];
+    private static instance: ProjectState;
+
+    private constructor() {}
+
+    static getInstance() {
+        if (this.instance) return this.instance;
+
+        this.instance = new ProjectState();
+        return this.instance;
+    }
+
+    addProject(project: project) {
+        const newProject = {
+            id: this.projects.length,
+            ...project
+        }
+        this.projects.push(newProject);
+    }
+
+}
+
+// Initialize state instance
+const projectState = ProjectState.getInstance();
+
+
 // autobind decorator
 function autobind(_target: any, _methodName: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
@@ -9,6 +44,40 @@ function autobind(_target: any, _methodName: string, descriptor: PropertyDescrip
     }
     return adjDescriptor;
 }
+
+// Project List class
+class ProjectList {
+    templateElement: HTMLTemplateElement;
+    hostElement: HTMLDivElement;
+    element: HTMLElement;
+
+    constructor(private type: 'active' | 'finished') {
+        this.templateElement = <HTMLTemplateElement>document.getElementById('project-list')!;
+        this.hostElement = document.getElementById('app')! as HTMLDivElement;
+
+        // Set the template content to the div app element
+        const importedNode = document.importNode(this.templateElement.content, true);
+        this.element = importedNode.firstElementChild as HTMLElement;
+        this.element.id = `${this.type}-project`;
+
+        this.attach();
+    }
+
+    private renderContent() {
+        const listId = `${this.type}-projects-list`;
+        this.element.querySelector('ul')!.id = listId;
+        this.element.querySelector('h2')!.textContent = this.type.toUpperCase() + ' PROJECTS';
+    }
+
+    private attach() {
+        this.hostElement.insertAdjacentElement('beforeend', this.element);
+        this.renderContent();
+    }
+
+
+
+}
+
 
 class ProjectInput {
     templateElement: HTMLTemplateElement;
@@ -66,7 +135,9 @@ class ProjectInput {
 
         if (Array.isArray(userInfo)) {
             const [title, description, people] = userInfo;
-            console.log(title, description, people);
+            
+            // Add project to state
+            projectState.addProject({ title, description, people })
             this.clearForm();
         }
     }
@@ -82,5 +153,7 @@ class ProjectInput {
 
 }
 
-// initialize element
+// initialize elements
 const pjtInput = new ProjectInput();
+const activeProjectList = new ProjectList('active');
+const finishedProjectList = new ProjectList('finished');
